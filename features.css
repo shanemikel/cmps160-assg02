@@ -1,0 +1,57 @@
+body {
+    margin: 15px 15px 15px 15px;
+    background-color: #fdfdfd;
+}
+
+* {
+    font-family: 'Roboto Condensed', sans-serif;
+}
+
+pre, code {
+    font-family: 'Inconsolata', monospace;
+}
+
+
+ul {
+    width: 65%;
+    padding-left: 10px;
+    list-style: none;
+    display: table;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+ul > li {
+    display: table-row;
+    line-height: 150%;
+}
+
+ul > li::before {
+    display: table-cell;
+    padding-right: 5px;
+}
+
+ul > li:nth-child(odd) {
+    background-color: #eee;
+}
+
+
+li::before {
+    font-family: 'FontAwesome';
+    content: '\f0c8';
+}
+
+li.done::before {
+    font-family: 'FontAwesome';
+    content: '\f14a';
+}
+
+li.extra::before {
+    font-family: 'FontAwesome';
+    content: '\f111';
+}
+
+li.extra.done::before {
+    font-family: 'FontAwesome';
+    content: '\f058';
+}
