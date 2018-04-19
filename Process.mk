@@ -16,6 +16,7 @@ features.css $(MAIN:=.css): %: $(LESS_LIBS:=.less)
 features.html $(MAIN:=.html): %: $(HTM_LIBS:=.htm)
 
 watch:
+	$(MAKE) -s all
 	./watch.sh $(addprefix -f ,$(ALL_SRC)) -- $(MAKE) -s all
 
 clean:

@@ -4,12 +4,23 @@ var RED   = null;
 var GREEN = null;
 var BLUE  = null;
 
+var g_reinit_lock = false;
 var g_canvas = null;
 
 function init() {
+    $(window).resize(function() {
+        if (! g_reinit_lock) reinit();
+    });
+
     RED   = hex2rgb($('#g-colors').css('--red'));
     GREEN = hex2rgb($('#g-colors').css('--green'));
     BLUE  = hex2rgb($('#g-colors').css('--blue'));
+
+    reinit();
+}
+
+function reinit() {
+    g_reinit_lock = true;
 
     var webgl_width  = $('#g-webgl').css('width');
     var webgl_height = $('#g-webgl').css('height');
@@ -17,39 +28,9 @@ function init() {
     g_canvas = $('#webgl');
     g_canvas.attr('width'  , webgl_width);
     g_canvas.attr('height' , webgl_height);
+
+    g_reinit_lock = false;
 }
-
-function hex2rgb(hex) {
-    // 'hexToRgb' function copied from 'https://stackoverflow.com/questions/5623838'
-    function hexToRgb(hex) {
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
-    }
-
-    var rgb = hexToRgb(hex.trim());
-    rgb = [rgb.r, rgb.g, rgb.b, 1.0];
-    for (var i = 0; i < rgb.length; i++)
-        rgb[i] /= 255;
-    return rgb;
-}
-
-
-var VSHADER_SOURCE =
-    'attribute vec4 a_Position;\n' +
-    'void main() {\n' +
-    '  gl_Position = a_Position;\n' +
-    '}\n';
-
-var FSHADER_SOURCE =
-    'precision mediump float;\n' +
-    'uniform vec4 u_FragColor;\n' +
-    'void main() {\n' +
-    '  gl_FragColor = u_FragColor;\n' +
-    '}\n';
 
 
 function main() {
@@ -74,12 +55,7 @@ function main() {
     var circle = new Circle2d([0.0, 0.0], 0.75);
     renderNgon(gl , circle.toNgon(100) , RED   , false);
     renderNgon(gl , circle.toNgon(8)   , GREEN , false);
-    renderNgon(gl , circle.toNgon(5)   , BLUE  , false);
-}
-
-function clear(gl) {
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
+    renderNgon(gl , circle.toNgon(4)   , BLUE  , false);
 }
 
 
@@ -100,12 +76,12 @@ var Circle2d = function(center, radius) {
 Circle2d.prototype = {
     toNgon: function(n) {
         // Returns an array of 'n' points, corresponding to the vertices of the n-gon
-        //   inscribed in the circle.  (Expects 'n' >= 3)
+        //   inscribed in the circle.  (Expects 'n' >= 4)
         var sliceAngle = 2 * Math.PI / n;
 
         var res = [];
         for (var i = 0; i < n; i++) {
-            if (n % 2 === 0) {  // 'n' is even
+            if (n % 2 == 0) {  // 'n' is even
                 var x = this.radius * Math.cos(i * sliceAngle);
                 var y = this.radius * Math.sin(i * sliceAngle);
             } else {
@@ -118,6 +94,12 @@ Circle2d.prototype = {
         return res;
     },
 };
+
+
+function clear(gl) {
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+}
 
 function renderNgon(gl, ngon_points, color, fill) {
     var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
@@ -140,7 +122,38 @@ function renderNgon(gl, ngon_points, color, fill) {
     }
 }
 
+var VSHADER_SOURCE =
+    'attribute vec4 a_Position;\n' +
+    'void main() {\n' +
+    '  gl_Position = a_Position;\n' +
+    '}\n';
+
+var FSHADER_SOURCE =
+    'precision mediump float;\n' +
+    'uniform vec4 u_FragColor;\n' +
+    'void main() {\n' +
+    '  gl_FragColor = u_FragColor;\n' +
+    '}\n';
+
 
 function point2string(x, y) {
     return "{" + x.toString() + ", " + y.toString() + "}";
+}
+
+function hex2rgb(hex) {
+    // 'hexToRgb' function copied from 'https://stackoverflow.com/questions/5623838'
+    function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+
+    var rgb = hexToRgb(hex.trim());
+    rgb = [rgb.r, rgb.g, rgb.b, 1.0];
+    for (var i = 0; i < rgb.length; i++)
+        rgb[i] /= 255;
+    return rgb;
 }
