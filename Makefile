@@ -1,4 +1,4 @@
-MAIN    = driver proto
+MAIN    = driver proto ngon2d
 JS_LIBS = shapes
 JS_SRC  = $(MAIN:=.js) $(JS_LIBS:=.js)
 
