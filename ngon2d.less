@@ -11,6 +11,7 @@ body
 
 *
 {
+    color: @white;
     font-family: @proportional-font;
 }
 
@@ -31,20 +32,21 @@ code
     flex-flow: row wrap;
 }
 
-@app-width: 95%;
-@app-height: 90%;
+@app-width: 99%;
+@app-height: 95%;
+@app-space: 10px;
 
 
-@controls-vertical-width:  200px;
+@controls-vertical-width: 300px;
 @controls-horizontal-height: 200px;
 
 #controls-vertical
 {
     .rounded();
     
-    margin-right: 10px;
-    width: calc(@controls-vertical-width - 10px);
-    height: calc(~'${app-height} - @{controls-horizontal-height}');
+    margin-right: @app-space;
+    width: calc(@controls-vertical-width - @app-space);
+    // height: calc(~'@{app-height} - @{controls-horizontal-height}');
     background-color: @light-grey;
 }
 
@@ -52,15 +54,15 @@ code
 {
     .rounded();
 
-    margin-bottom: 10px;
-    width: @webgl-width;
-    height: calc(@controls-horizontal-height - 10px);
+    margin-bottom: @app-space;
+    width: @app-width;
+    height: calc(@controls-horizontal-height - @app-space);
     background-color: @light-grey;
 }
 
 
-@webgl-width:  calc(~'@{app-width} - @{controls-vertical-width}');
-@webgl-height: calc(~'@{app-height} - @{controls-horizontal-height}');
+@webgl-width:  calc(~'@{app-width} - @{app-space} - @{controls-vertical-width}');
+@webgl-height: calc(~'@{app-height} - @{app-space} - @{controls-horizontal-height}');
 
 #g-webgl
 {
