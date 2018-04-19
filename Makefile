@@ -1,19 +1,7 @@
-MAIN    = driver proto ngon2d
-JS_LIBS = shapes
-JS_SRC  = $(MAIN:=.js) $(JS_LIBS:=.js)
+MAIN       = driver proto ngon2d
+JS_LIBS    = shapes
+LESS_LIBS  =
+HTM_LIBS   = head-start base-styles jquery font-awesome head-end body-start
+HTM_LIBS  += webgl-libs body-end
 
-.PHONY: all watch clean
-
-all: $(MAIN:=.jsc)
-
-$(MAIN:=.jsc): %: $(%:.jsc=.js) $(JS_LIBS:=.js)
-
-watch:
-	./watch.sh $(addprefix -f ,$(JS_SRC)) -- $(MAKE) -s all
-
-clean:
-	rm -f $(MAIN:=.jsc)
-
-%.jsc: %.js
-	cpp -P -undef -Wundef -std=c99 -nostdinc -Wtrigraphs -fdollars-in-identifiers \
-            $< $@
+-include Process.mk

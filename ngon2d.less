@@ -1,0 +1,82 @@
+@white:      #fdfdfd;
+@black:      #000;
+@dark-grey:  #212121;
+@light-grey: #515151;
+
+@monospace-font:    'Inconsolata'      , monospace  ;
+@proportional-font: 'Roboto Condensed' , sans-serif ;
+
+body
+{
+    margin: 15px 15px 15px 15px;
+    background-color: @dark-grey;
+}
+
+*
+{
+    font-family: @proportional-font;
+}
+
+pre,
+code
+{
+    font-family: @monospace-font;
+}
+
+
+.rounded() {
+    border-radius: 8px;
+    padding: 4px 4px 4px 4px;
+}
+
+.flex-container {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+@width: 95%;
+@height: 90%;
+
+
+@controls-vertical-width:  200px;
+@controls-horizontal-height: 200px;
+
+#controls-vertical
+{
+    .rounded();
+    
+    margin-right: 10px;
+    width: calc(@controls-vertical-width - 10px);
+    height: calc(~'${height} - @{controls-horizontal-height}');
+    background-color: @light-grey;
+}
+
+#controls-horizontal
+{
+    .rounded();
+
+    margin-bottom: 10px;
+    width: @webgl-width;
+    height: calc(@controls-horizontal-height - 10px);
+    background-color: @light-grey;
+}
+
+
+@webgl-width:  calc(~'@{width} - @{controls-vertical-width}');
+@webgl-height: calc(~'@{height} - @{controls-horizontal-height}');
+
+#g-webgl
+{
+    width: @webgl-width;
+    height: @webgl-height;
+}
+
+#webgl-mask
+{
+    .rounded();
+
+    width: @webgl-width;
+    height: @webgl-height;
+    background-color: @black;
+    overflow: hidden;
+}

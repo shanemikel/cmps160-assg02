@@ -18,10 +18,19 @@ var FSHADER_SOURCE =
     '}\n';
 
 
-var g_canvas = $('#webgl');
+var g_canvas = null;
+
+function init() {
+    g_canvas = $('#webgl');
+
+    g_canvas.attr( 'width'  , $('#g-webgl').css('width')  );
+    g_canvas.attr( 'height' , $('#g-webgl').css('height') );
+}
 
 
 function main() {
+    init();
+
     var canvas = g_canvas[0];
 
     var gl = getWebGLContext(g_canvas[0]);

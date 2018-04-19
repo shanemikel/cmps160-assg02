@@ -21,7 +21,7 @@ var FSHADER_SOURCE =
 
 var g_canvas = $('#webgl');
 
-var g_polyLine = new PolyLine();
+var g_polyline = new Polyline();
 
 
 function main() {
@@ -42,6 +42,9 @@ function main() {
         switch (ev.which) {
         case 1:
             click(gl, getMouseXY(ev));
+            break;
+        case 3:
+            rightClick(gl);
             break;
         }
     });
@@ -67,40 +70,21 @@ function getMouseXY(ev) {
 }
 
 
-function renderPolyLine(gl, polyLine, mouseXY) {
+function renderPolyline(gl, polyline, mouseXY) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-    if (a_Position < 0) {
-        console.log('Failed to get the storage location of a_Position');
-        return;
-    }
-
     var u_PointSize = gl.getUniformLocation(gl.program, 'u_PointSize');
-    if (! u_PointSize) {
-        console.log('Failed to get the storage location of u_PointSize');
-        return;
-    }
     gl.uniform1f(u_PointSize, POINT_SIZE);
-
     var u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
-    if (! u_FragColor) {
-        console.log('Failed to get the storage location of u_FragColor');
-        return;
-    }
-    var color = polyLine.getColor();
+    var color = polyline.getColor();
     gl.uniform4f(u_FragColor, color[0], color[1], color[2], color[3]);
 
     var vertexBuffer = gl.createBuffer();
-    if (! vertexBuffer) {
-        console.log('Failed to create the buffer object');
-        return;
-    }
+    var buffer = polyline.flatten(mouseXY);
 
-    var buffer = polyLine.flatten(mouseXY);
     var count = buffer.length / 2;
-
     if (count === 0)
         return;
 
@@ -112,6 +96,31 @@ function renderPolyLine(gl, polyLine, mouseXY) {
     gl.drawArrays(gl.LINE_STRIP, 0, count);
 }
 
+function renderPolygon(gl, polyline) {
+    gl.clearColor(0.0, 0.0, 0.0, 1.0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+
+    var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+    var u_PointSize = gl.getUniformLocation(gl.program, 'u_PointSize');
+    gl.uniform1f(u_PointSize, POINT_SIZE);
+    var u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
+    var color = polyline.getColor();
+    gl.uniform4f(u_FragColor, color[0], color[1], color[2], color[3]);
+
+    var vertexBuffer = gl.createBuffer();
+    var buffer = polyline.flatten();
+
+    var count = buffer.length / 2;
+    if (count === 0)
+        return;
+
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, buffer, gl.DYNAMIC_DRAW);
+    gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(a_Position);
+    gl.drawArrays(gl.TRIANGLE_FAN, 0, count);
+}
+
 
 function click(gl, mouseXY) {
     var x = mouseXY[0];
@@ -119,8 +128,12 @@ function click(gl, mouseXY) {
 
     console.log("Recieved click: " + point2string(x, y));
 
-    g_polyLine.pushPoint(x, y);
-    renderPolyLine(gl, g_polyLine, mouseXY);
+    g_polyline.pushPoint(x, y);
+    renderPolyline(gl, g_polyline, mouseXY);
+}
+
+function rightClick(gl) {
+    renderPolygon(gl, g_polyline);
 }
 
 

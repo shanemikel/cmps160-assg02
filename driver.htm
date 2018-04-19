@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"></meta>
+    <title>Assignment 1</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css"
+	  rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata|Roboto+Condensed"
+	  rel="stylesheet">
+    <script defer src="https://use.fontawesome.com/releases/v5.0.10/js/all.js"
+	    integrity="sha384-slN8GvtUJGnv6ca26v8EzVaR9DC58QEwsIk9q1QXdCU8Yu8ck/tL/5szYlBbqmS+"
+	    crossorigin="anonymous"></script>
+    <link href="driver.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.js"
+	    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+	    crossorigin="anonymous"></script>
+  </head>
+
+  <body onload="main()">
+    <div class="flex-container">
+      <div id="canvas-mask">
+	<canvas id="webgl" width="500" height="500" oncontextmenu="return false;">
+	  Please use a browser that supports "canvas"
+	</canvas>
+      </div>
+
+      <div id="control-panel-right">
+	<div class="control" style="padding-bottom:8px">
+	  <a> Reset </a>
+	  <span style="float:right; margin-left:5px;">
+	    <button id="polylines-reset" type="button">
+	      <i class="fas fa-ban"></i>
+	    </button>
+	  </span>
+	</div>
+	<div id="polyline-controls" class="control-group" hidden="true">
+	  <a> PolyLine Controls </a>
+	</div>
+      </div>
+    </div>
+
+    <div id="control-panel-bottom" class="flex-container">
+      <span>
+	<a> Point size </a>
+	<input id="point-size-slider" type="range" min="1" max="20">
+	<a id="point-size-label"></a>
+      </span>
+    </div>
+
+    <script src="../lib/webgl-utils.js"></script>
+    <script src="../lib/webgl-debug.js"></script>
+    <script src="../lib/cuon-utils.js"></script>
+    <script src="driver.jsc"></script>
+  </body>
+</html>
