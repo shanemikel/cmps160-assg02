@@ -1,9 +1,9 @@
 JS_SRC   = $(MAIN:=.js) $(JS_LIBS:=.js)
-LESS_SRC = features.less $(MAIN:=.less)
-HTM_SRC  = features.htm $(MAIN:=.htm)
+LESS_SRC = features.less $(MAIN:=.less) $(LESS_LIBS:=.less)
+HTM_SRC  = features.htm $(MAIN:=.htm) $(HTM_LIBS:=.htm)
 ALL_SRC  = $(JS_SRC) $(LESS_SRC) $(HTM_SRC)
 
-JS_OUT     = $(MAIN:=.jsc)
+JS_OUT   = $(MAIN:=.jsc)
 LESS_OUT = features.css $(MAIN:=.css)
 HTM_OUT  = features.html $(MAIN:=.html)
 ALL_OUT  = $(JS_OUT) $(LESS_OUT) $(HTM_OUT)

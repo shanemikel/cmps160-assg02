@@ -1,7 +1,41 @@
-#define RED   [1.0, 0.4, 0.4, 1.0]
-#define GREEN [0.4, 1.0, 0.4, 1.0]
-#define BLUE  [0.4, 0.4, 1.0, 1.0]
 #define WHITE [1.0, 1.0, 1.0, 1.0]
+
+var RED   = null;
+var GREEN = null;
+var BLUE  = null;
+
+var g_canvas = null;
+
+function init() {
+    RED   = hex2rgb($('#g-colors').css('--red'));
+    GREEN = hex2rgb($('#g-colors').css('--green'));
+    BLUE  = hex2rgb($('#g-colors').css('--blue'));
+
+    var webgl_width  = $('#g-webgl').css('width');
+    var webgl_height = $('#g-webgl').css('height');
+
+    g_canvas = $('#webgl');
+    g_canvas.attr('width'  , webgl_width);
+    g_canvas.attr('height' , webgl_height);
+}
+
+function hex2rgb(hex) {
+    // 'hexToRgb' function copied from 'https://stackoverflow.com/questions/5623838'
+    function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+
+    var rgb = hexToRgb(hex.trim());
+    rgb = [rgb.r, rgb.g, rgb.b, 1.0];
+    for (var i = 0; i < rgb.length; i++)
+        rgb[i] /= 255;
+    return rgb;
+}
 
 
 var VSHADER_SOURCE =
@@ -16,16 +50,6 @@ var FSHADER_SOURCE =
     'void main() {\n' +
     '  gl_FragColor = u_FragColor;\n' +
     '}\n';
-
-
-var g_canvas = null;
-
-function init() {
-    g_canvas = $('#webgl');
-
-    g_canvas.attr( 'width'  , $('#g-webgl').css('width')  );
-    g_canvas.attr( 'height' , $('#g-webgl').css('height') );
-}
 
 
 function main() {
