@@ -1,80 +1,81 @@
-body {
+@import "palette.less";
+
+@monospace-font:    'Inconsolata'      , monospace  ;
+@proportional-font: 'Roboto Condensed' , sans-serif ;
+
+body
+{
     margin: 15px 15px 15px 15px;
-    background-color: #fdfdfd;
+    background-color: @dark-grey;
 }
 
-* {
-    font-family: 'Roboto Condensed', sans-serif;
+*
+{
+    color: @white;
+    font-family: @proportional-font;
 }
 
-pre, code {
-    font-family: 'Inconsolata', monospace;
+pre,
+code
+{
+    font-family: @monospace-font;
 }
 
+
+.rounded() {
+    border-radius: 8px;
+    padding: 4px 4px 4px 4px;
+}
 
 .flex-container {
     display: flex;
     flex-flow: row wrap;
 }
 
+@app-width: 99%;
+@app-height: 95%;
+@app-space: 10px;
 
-#canvas-mask {
-    border-radius: 10px;
-    padding: 5px 5px 5px 5px;
-    background-color: #000000;
+
+@controls-vertical-width: 300px;
+@controls-horizontal-height: 200px;
+
+#controls-vertical
+{
+    .rounded();
+    
+    margin-right: @app-space;
+    width: calc(@controls-vertical-width - @app-space);
+    // height: calc(~'@{app-height} - @{controls-horizontal-height}');
+    background-color: @light-grey;
+}
+
+#controls-horizontal
+{
+    .rounded();
+
+    margin-bottom: @app-space;
+    width: @app-width;
+    height: calc(@controls-horizontal-height - @app-space);
+    background-color: @light-grey;
+}
+
+
+@webgl-width:  calc(~'@{app-width} - @{app-space} - @{controls-vertical-width}');
+@webgl-height: calc(~'@{app-height} - @{app-space} - @{controls-horizontal-height}');
+
+#g-webgl
+{
+    width: @webgl-width;
+    height: @webgl-height;
+}
+
+#webgl-mask
+{
+    .rounded();
+
+    width: @webgl-width;
+    height: @webgl-height;
+    background-color: @black;
     overflow: hidden;
-}
-
-
-#control-panel-right {
-    margin-left: 10px;
-}
-
-#control-panel-right > div {
-    margin-top: 7px;
-    padding: 5px;
-}
-
-#control-panel-right > div.control-group {
-    background-color: #cdf;
-}
-
-#control-panel-right > div > * {
-    vertical-align: middle;
-}
-
-div.control-group {
-    text-align: center;
-}
-
-div.control-group > div.control {
-    background-color: #cdf;
-    padding: 5px;
-}
-
-#control-panel-right > div.control {
-    background-color: #cdf;
-}
-
-#control-panel-bottom {
-    width: 500px;
-    margin-top: 5px;
-}
-
-#control-panel-bottom > span {
-    margin: 5px;
-    background-color: #cdf;
-    padding: 5px;
-}
-
-#control-panel-bottom > span > * {
-    vertical-align: middle;
-}
-
-
-input[type=range] {
-    overflow: hidden;
-    width: 80px;
-    -webkit-appearance: none;
-    background-color: #9a905d;
 }
