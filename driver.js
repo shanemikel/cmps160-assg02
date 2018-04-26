@@ -1,14 +1,24 @@
+#define POINT_SIZE 8
+
 #define WHITE [1.0, 1.0, 1.0, 1.0]
+
+var g_point_size = POINT_SIZE;
 
 var RED   = null;
 var GREEN = null;
 var BLUE  = null;
 
+var g_gl          = null;
 var g_reinit_lock = false;
 var g_canvas      = null;
 
 var WIDTH  = null;
 var HEIGHT = null;
+
+var g_mouse_focus = false;
+
+// var g_building_line = false;
+// var g_poly_lines    = new PolyLines();
 
 function init() {
     $(window).resize(function() {
@@ -19,18 +29,24 @@ function init() {
     GREEN = hex2rgb($('#g-colors').css('--green'));
     BLUE  = hex2rgb($('#g-colors').css('--blue'));
 
+    g_canvas = $('#webgl');
+
     reinit();
 }
 
 function reinit() {
     g_reinit_lock = true;
 
-    WIDTH  = $('#g-webgl').css('width');
-    HEIGHT = $('#g-webgl').css('height');
+    WIDTH    = $('#g-webgl').css('width');
+    HEIGHT   = $('#g-webgl').css('height');
 
-    g_canvas = $('#webgl');
     g_canvas.attr('width'  , WIDTH);
     g_canvas.attr('height' , HEIGHT);
+
+    // if (g_gl) {
+    //     console.log(g_gl);
+    //     render(g_gl);
+    // }
 
     g_reinit_lock = false;
 }
@@ -38,8 +54,6 @@ function reinit() {
 
 function main() {
     init();
-
-    var canvas = g_canvas[0];
 
     var gl = getWebGLContext(g_canvas[0]);
     if (! gl) {
@@ -52,8 +66,11 @@ function main() {
         return;
     }
 
+    var id = new Matrix();
+
     gl.lineWidth(2.0);
     render(gl);
+    g_gl = gl;
 }
 
 function render(gl) {
@@ -66,7 +83,24 @@ function render(gl) {
 }
 
 
+var Matrix = function() {
+    /**  Construct a 4x4 identity matrix, stored in row-major order
+     */
+
+    this.data = new Float32Array(4 * 4);
+    console.log(this.data);
+    console.log(this.data.length);
+};
+
+Matrix.prototype = {
+    
+};
+
+
 function flatten(arr) {
+    /**  Flatten a List of 3D Vectors into a flat Array of Float32
+     */
+
     var res = new Float32Array(arr.length * 3);
     for (var i = 0; i < arr.length; i++) {
         res[3 * i]     = arr[i][0];
@@ -125,10 +159,13 @@ function render_ngon(gl, vertices, color, fill) {
         gl.drawArrays(gl.LINE_LOOP, 0, vertices.length);
 }
 
+
 var VSHADER_SOURCE =
     'attribute vec4 a_Position;\n' +
+    'uniform float u_PointSize;' +
     'void main() {\n' +
     '  gl_Position = a_Position;\n' +
+    '  gl_PointSize = u_PointSize;\n' +
     '}\n';
 
 var FSHADER_SOURCE =
