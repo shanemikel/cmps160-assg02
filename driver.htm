@@ -1,6 +1,6 @@
 #include "head-start.htm"
 
-<title>Prototype 2D N-gon</title>
+<title>Assignment 2</title>
 
 #include "base-styles.htm"
 #include "font-awesome.htm"
@@ -13,20 +13,20 @@
 <meta id="g-colors" />
 <meta id="g-webgl" />
 
-<div id="controls-horizontal">
-  <code>HORZ</code>
-</div>
-
 <div class="flex-container">
-  <div id="controls-vertical">
-    <code>VERT</code>
-  </div>
-
   <div id="webgl-mask">
     <canvas id="webgl" oncontextmenu="return false;">
       Please use a browser that supports "canvas"
     </canvas>
   </div>
+
+  <div id="controls-vertical">
+    <code>VERT</code>
+  </div>
+</div>
+
+<div id="controls-horizontal">
+  <code>HORZ</code>
 </div>
 
 #include "webgl-libs.htm"
