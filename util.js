@@ -24,7 +24,7 @@ function clear(gl, color) {
 }
 
 function render_vertices(gl, mode, vertices, color) {
-    color = color || RED;
+    color = color || WHITE;
 
     var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
     if (a_Position < 0) {
@@ -57,15 +57,18 @@ function render_vertices(gl, mode, vertices, color) {
     gl.deleteBuffer(vertexBuffer);
 }
 
-function render_lines(gl, vertices, color) {
+function render_lines(gl, width, vertices, color) {
+    gl.lineWidth(width);
     render_vertices(gl, gl.LINES, vertices, color);
 }
 
-function render_line_strip(gl, vertices, color) {
+function render_line_strip(gl, width, vertices, color) {
+    gl.lineWidth(width);
     render_vertices(gl, gl.LINE_STRIP, vertices, color);
 }
 
-function render_line_loop(gl, vertices, color) {
+function render_line_loop(gl, width, vertices, color) {
+    gl.lineWidth(width);
     render_vertices(gl, gl.LINE_LOOP, vertices, color);
 }
 
@@ -82,7 +85,7 @@ function render_triangle_fan(gl, vertices, color) {
 }
 
 function render_points(gl, point_size, vertices, color) {
-    color = color || RED;
+    color = color || WHITE;
 
     var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
     if (a_Position < 0) {

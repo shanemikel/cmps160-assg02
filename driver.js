@@ -4,7 +4,7 @@
 
 #define POINT_SIZE 5
 #define SIDES 12
-#define RADIUS 0.08
+#define RADIUS 0.06
 
 var WHITE       = null;
 var BLACK       = null;
@@ -154,6 +154,7 @@ function right_click(gl, mouse_xy) {
 function render(gl, mouse_xy) {
     clear(gl, COLOR);
 
+    render_grid(gl, DARK_GREY);
     render_polygon_test(gl);
 
     render_polylines(gl, mouse_xy);
@@ -161,35 +162,54 @@ function render(gl, mouse_xy) {
 }
 
 function render_polygon_test(gl) {
-    render_line_loop(gl, (new Circle(ORIGIN, 0.5)).toPolygon(16), GREEN);
-    render_line_loop(gl, (new Circle(ORIGIN, 0.5)).toPolygon( 8), RED);
-    render_line_loop(gl, (new Circle(ORIGIN, 0.5)).toPolygon( 4), BLUE);
+    render_line_loop(gl, 2, (new Circle(ORIGIN, 0.5)).toPolygon(16), GREEN);
+    render_line_loop(gl, 2, (new Circle(ORIGIN, 0.5)).toPolygon( 8), RED);
+    render_line_loop(gl, 2, (new Circle(ORIGIN, 0.5)).toPolygon( 4), BLUE);
+}
+
+function render_grid(gl, color) {
+    var vertices = [];
+    vertices.push([-1.0,  0.0, 0.0]);
+    vertices.push([ 1.0,  0.0, 0.0]);
+    vertices.push([ 0.0, -1.0, 0.0]);
+    vertices.push([ 0.0,  1.0, 0.0]);
+    render_lines(gl, 2, vertices, color);
+
+    vertices = [];
+    var tick_length = 0.02;
+    var tick_space  = 0.1;
+    for (var i = 1; i <= 2 / tick_space - 1; i++) {
+        var tick = i * tick_space - 1;
+
+        vertices.push([-tick_length, tick, 0.0]);
+        vertices.push([ tick_length, tick, 0.0]);
+
+        vertices.push([tick, -tick_length, 0.0]);
+        vertices.push([tick,  tick_length, 0.0]);
+    }
+    render_lines(gl, 1, vertices, color);
 }
 
 function render_cylinders(gl) {
-    gl.lineWidth(1.0);
-
     for (var i = 0; i < g_cylinders.length; i++) {
         var cylinder = g_cylinders[i];
-        render_lines(gl, cylinder.toFrame(g_sides, g_radius), cylinder.getColor());
+        render_lines(gl, 1, cylinder.toFrame(g_sides, g_radius), cylinder.getColor());
     }
 }
 
 function render_polylines(gl, mouse_xy) {
-    gl.lineWidth(2.0);
-
     g_polylines.map(function(i, polyline) {
-        render_line_strip(gl, polyline.getPoints(), polyline.getColor());
+        render_line_strip(gl, 2, polyline.getPoints(), polyline.getColor());
         render_points(gl, g_point_size, polyline.getPoints(), polyline.getColor());
     });
 
     var polyline = g_polylines.current;
     if (polyline.getPoints().length == 0) return;
     if (g_mouse_focus) {
-        render_line_strip(gl, polyline.getPoints(mouse_xy), polyline.getColor());
+        render_line_strip(gl, 2, polyline.getPoints(mouse_xy), polyline.getColor());
         render_points(gl, g_point_size, polyline.getPoints(mouse_xy), polyline.getColor());
     } else {
-        render_line_strip(gl, polyline.getPoints(), polyline.getColor());
+        render_line_strip(gl, 2, polyline.getPoints(), polyline.getColor());
         render_points(gl, g_point_size, polyline.getPoints(), polyline.getColor());
     }
 }
