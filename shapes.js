@@ -1,18 +1,12 @@
 #pragma once
 
 
-var RED   = [1.0, 0.0, 0.0, 1.0];
-var GREEN = [0.0, 1.0, 0.0, 1.0];
-var BLUE  = [0.0, 0.0, 1.0, 1.0];
-var WHITE = [1.0, 1.0, 1.0, 1.0];
-
-
-var PolyLine = function(color) {
+var Polyline = function(color) {
     this.color  = color || RED;
     this.points = [];
 }
 
-PolyLine.prototype = {
+Polyline.prototype = {
     pushPoint: function(x, y) {
         this.points.push([x, y]);
     },
@@ -50,31 +44,31 @@ PolyLine.prototype = {
 };
 
 
-var PolyLines = function() {
+var Polylines = function() {
     this.count = 0;
     this.lines = [];
-    this.current = new PolyLine;
+    this.current = new Polyline;
 };
 
-PolyLines.prototype = {
-    insert: function(polyLine) {
+Polylines.prototype = {
+    insert: function(polyline) {
         for (var i = 0; i < this.lines.length; i++) {
             if (this.lines[i] === undefined) {
-                this.lines[i] = polyLine;
+                this.lines[i] = polyline;
 
                 this.count += 1;
                 return i;
             }
         }
         var i = this.lines.length;
-        this.lines[i] = polyLine;
+        this.lines[i] = polyline;
 
         this.count += 1;
         return i;
     },
     makeNew: function(color) {
         var i = this.insert(this.current);
-        this.current = new PolyLine(color);
+        this.current = new Polyline(color);
         return i;
     },
 
@@ -173,9 +167,8 @@ Matrix.prototype = {
     },
 
     multiply: function(other) {
-        /**  Multiply a 4x4 matrix by a 3-vector or another 4x4 Matrix.
-         *
-         *   other: Either a matrix or vector.
+        /**  Multiply a 4x4 matrix by a 3-vector or another 4x4 Matrix
+         *   @param other either a matrix or vector
          */
         if (other.data === undefined) {  // other is a 3-vector or 4-vector (as Array)
             other = [other[0], other[1], other[2], 1.0];
@@ -211,9 +204,8 @@ Matrix.prototype = {
 };
 
 
-var Circle = function(center, normal, radius) {
+var Circle = function(center, radius) {
     this.center = center;
-    this.normal = normal;
     this.radius = radius;
 };
 
@@ -227,8 +219,8 @@ Circle.prototype = {
                 var x1 = this.radius * Math.cos(i * sliceAngle);
                 var y1 = this.radius * Math.sin(i * sliceAngle);
             } else {
-                var y1 = this.radius * -Math.sin(i * sliceAngle);
-                var x1 = this.radius * -Math.cos(i * sliceAngle);
+                var y1 = this.radius * Math.cos(i * sliceAngle);
+                var x1 = this.radius * Math.sin(i * sliceAngle);
             }
             res[i] = [x1, y1, 0.0];
         }

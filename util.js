@@ -1,6 +1,16 @@
 #pragma once
 
 
+function get_mouse_xy(canvas, ev) {
+    var x    = ev.clientX;
+    var y    = ev.clientY;
+    var rect = ev.target.getBoundingClientRect();
+
+    x = ((x - rect.left) - canvas.width() / 2) / (canvas.width() / 2);
+    y = (canvas.height() / 2 - (y - rect.top)) / (canvas.height() / 2);
+    return [x, y];
+}
+
 function flatten(n, arr) {
     /**  Flatten a list of n-lists (n-dimensional vectors) into a Float32Array
      */
@@ -32,4 +42,8 @@ function hex2rgb(hex) {
     for (var i = 0; i < rgb.length; i++)
         rgb[i] /= 255;
     return rgb;
+}
+
+function point2string(x, y) {
+    return "{" + x.toString() + ", " + y.toString() + "}";
 }
