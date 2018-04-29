@@ -4,7 +4,7 @@
 
 #define POINT_SIZE 5
 #define SIDES 12
-#define RADIUS 0.1
+#define RADIUS 0.05
 
 var RED   = null;
 var GREEN = null;

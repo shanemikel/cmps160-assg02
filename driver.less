@@ -11,7 +11,7 @@ body
 
 *
 {
-    color: @white;
+    color: lighten(@light-grey, 40%);
     font-family: @proportional-font;
 }
 
@@ -21,24 +21,45 @@ code
     font-family: @monospace-font;
 }
 
+button
+{
+    background-color: darken(@light-grey, 10%);
+    border: 2px solid lighten(@light-grey, 10%);
+}
+
 
 @rounded-padding: 4px;
 
-.rounded() {
+.rounded()
+{
     border-radius: 8px;
     padding: @rounded-padding;
 }
 
-.flex-container {
+.flex-container
+{
     display: flex;
     flex-flow: row wrap;
 }
 
 
+.controls > .label
+{
+    font-family: @proportional-font;
+}
+
+.controls > div
+{
+    padding: 5px 0 5px 0;
+    border-bottom: 2px double darken(@light-grey, 5%);
+    text-align: center;
+    font-family: @monospace-font;
+}
+
 @app-space: 10px;
 
-@controls-vertical-width: 300px;
-@controls-horizontal-height: 200px;
+@controls-vertical-width: 250px;
+@controls-horizontal-height: 150px;
 
 #controls-vertical
 {
