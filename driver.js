@@ -3,7 +3,8 @@
 
 
 #define POINT_SIZE 5
-#define CYLINDER_SIDES 12
+#define SIDES 12
+#define RADIUS 0.1
 
 var RED   = null;
 var GREEN = null;
@@ -21,7 +22,8 @@ var g_mouse_focus = false;
 var g_point_size     = POINT_SIZE;
 var g_building_line  = false;
 var g_polylines      = null;
-var g_cylinder_sides = CYLINDER_SIDES;
+var g_sides          = SIDES;
+var g_radius         = RADIUS;
 var g_cylinders      = null;
 
 function init() {
@@ -59,7 +61,6 @@ function start(gl) {
         return;
     }
 
-    gl.lineWidth(2.0);
     setup_callbacks(gl);
 
     render(gl);
@@ -69,13 +70,13 @@ function setup_callbacks(gl) {
     g_canvas.mouseenter(function() {
         console.log('Canvas has mouse focus: ' + g_mouse_focus);
         g_mouse_focus = true;
-        render_polylines(gl);
+        render(gl);
     });
 
     g_canvas.mouseout(function() {
         console.log('Canvas has mouse focus: ' + g_mouse_focus);
         g_mouse_focus = false;
-        render_polylines(gl);
+        render(gl);
     });
 
     g_canvas.mousedown(function(ev) {
@@ -117,13 +118,15 @@ function right_click(gl, mouse_xy) {
         return;
     g_building_line = false;
 
-    var j = g_polylines.makeNew();
-    var points = g_polylines.at(j).getPoints();
-    for (var i = 0; i < points.length; i++) {
-        var point = points[i];
-        console.log('g_polylines[' + j + '][' + i + ']: '
-                    + point2string(point[0], point[1]));
-    }
+    var points = g_polylines.current.getPoints();
+    g_polylines.current = new Polyline();
+
+    console.log('Adding cylinder: '
+                + point2string(points[0][0], points[0][1], points[0][2])
+                + ' => '
+                + point2string(points[1][0], points[1][1], points[1][2]));
+    var cylinder = new Cylinder(points[0], points[1]);
+    g_cylinders.push(cylinder);
 
     render(gl, mouse_xy);
 }
@@ -132,9 +135,8 @@ function right_click(gl, mouse_xy) {
 function render(gl, mouse_xy) {
     clear(gl);
     
-    // render_ngon_test(gl);
-
     render_polylines(gl, mouse_xy);
+    render_cylinders(gl);
 }
 
 function clear(gl) {
@@ -143,55 +145,37 @@ function clear(gl) {
 }
 
 
-function render_ngon_test(gl) {
-    var circle = new Circle([0.0, 0.0, 0.0], 0.75);
+function render_cylinders(gl) {
+    gl.lineWidth(1.0);
 
-    // render_ngon(gl , circle.toNGon(100) , RED   , false);
-    // render_ngon(gl , circle.toNGon(  8) , GREEN , false);
-    // render_ngon(gl , circle.toNGon(  4) , BLUE  , false);
-
-    var xform = new Matrix();
-    xform = xform.scale(0.25);
-
-    var ngon     = circle.toNGon(5);
-    var vertices = triangles(ngon);
-
-    res = [];
-    for (var i = 0; i < vertices.length; i++)
-        res[i] = xform.multiply(vertices[i]);
-
-    render_ngon(gl, res, RED, false);
+    for (var i = 0; i < g_cylinders.length; i++) {
+        render_cylinder(gl, g_cylinders[i]);
+    }
 }
 
-function render_ngon(gl, vertices, color) {
+function render_cylinder(gl, cylinder) {
     var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
 
+    var color       = cylinder.getColor();
     var u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
     gl.uniform4f(u_FragColor, color[0], color[1], color[2], color[3]);
 
+    var buffer = flatten(3, cylinder.toFrame(g_sides, g_radius));
+    var count  = buffer.length / 3;
+
     var vertexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(3, vertices), gl.DYNAMIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, buffer, gl.DYNAMIC_DRAW);
     gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(a_Position);
 
-    gl.drawArrays(gl.LINES, 0, vertices.length);
-}
-
-function triangles(ngon) {
-    var res = [];
-    for (var i = 0; i < ngon.length; i++) {
-        var i2 = (i + 1) % ngon.length;
-        res.push([0.0, 0.0, 0.0]);
-        res.push(ngon[i]);
-        res.push(ngon[i]);
-        res.push(ngon[i2]);
-    }
-    return res;
+    gl.drawArrays(gl.LINES, 0, count);
 }
 
 
 function render_polylines(gl, mouse_xy) {
+    gl.lineWidth(2.0);
+
     g_polylines.map(function(i, polyline) {
         render_polyline(gl, polyline);
     });
@@ -231,14 +215,14 @@ function render_polyline(gl, polyline, mouse_xy) {
     }
 
     var buffer = polyline.flatten(mouse_xy);
-    var count  = buffer.length / 2;
+    var count  = buffer.length / 3;
 
     if (count == 0)
         return;
 
     gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, buffer, gl.DYNAMIC_DRAW);
-    gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+    gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(a_Position);
     gl.drawArrays(gl.POINTS, 0, count);
     gl.drawArrays(gl.LINE_STRIP, 0, count);

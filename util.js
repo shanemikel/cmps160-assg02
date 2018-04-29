@@ -44,6 +44,6 @@ function hex2rgb(hex) {
     return rgb;
 }
 
-function point2string(x, y) {
-    return "{" + x.toString() + ", " + y.toString() + "}";
+function point2string(x, y, z) {
+    return "{" + x + ", " + y + ", " + z + "}";
 }
