@@ -21,10 +21,88 @@ code
     font-family: @monospace-font;
 }
 
-button
+.button()
 {
+    padding: 2px 4px 2px 4px;
     background-color: darken(@grey, 8%);
     border: 2px solid lighten(@grey, 10%);
+    font-family: @monospace-font;
+}
+
+button
+{
+    .button();
+}
+
+button.disabled
+{
+    background-color: darken(@grey, 4%);
+    border: 2px solid lighten(@grey, 5%);
+}
+
+input[type='file']::-webkit-file-upload-button
+{
+    .button();
+    color: @light-grey;
+}
+
+input[type='file'].disabled::-webkit-file-upload-button
+{
+    background-color: darken(@grey, 4%);
+    border: 2px solid lighten(@grey, 5%);
+}
+
+@thumb-width: 12px;
+@thumb-height: 20px;
+@thumb-color: lighten(@grey, 10%);
+@track-width: 100px;
+@track-height: 20px;
+@track-color: darken(@grey, 8%);
+@track-border-color: lighten(@grey, 10%);
+
+.track()
+{
+    width: @track-width;
+    heght: @track-height;
+    cursor: pointer;
+    animate: 0.2s;
+}
+
+.thumb()
+{
+    border: 2px solid lighten(@thumb-color, 8%);
+    height: @thumb-height;
+    width: @thumb-width;
+    border-radius: 2px;
+    background: @thumb-color;
+    cursor: pointer;
+}
+
+input[type='range']
+{
+    -webkit-appearance: none;
+    vertical-align: bottom;
+    // margin: calc(@thumb-height / 2) 3px;
+    width: @track-width;
+
+    &:focus
+    {
+        outline: none;
+    }
+
+    &::-webkit-slider-runnable-track
+    {
+        .track();
+        border: 2px solid @track-border-color;
+        background: @track-color;
+    }
+
+    &::-webkit-slider-thumb
+    {
+        .thumb();
+        -webkit-appearance: none;
+        margin-top: (@track-height / 2) - (@thumb-height / 2);
+    }
 }
 
 
@@ -50,14 +128,30 @@ button
 .controls > div
 {
     padding: 5px 0 5px 0;
-    border-bottom: 2px double darken(@grey, 5%);
+    border-bottom: 3px double darken(@grey, 8%);
     text-align: center;
     font-family: @monospace-font;
 }
 
+.controls > div > span
+{
+    margin: 0;
+    padding: 0 5px 0 6px;
+}
+
+.controls span:not(:first-child)
+{
+    border-left: 1px solid darken(@grey, 5%);
+}
+
+.controls span:not(:last-child)
+{
+    border-right: 1px solid darken(@grey, 5%);
+}
+
 @app-space: 10px;
 
-@controls-vertical-width: 250px;
+@controls-vertical-width: 220px;
 @controls-horizontal-height: 150px;
 
 #controls-vertical

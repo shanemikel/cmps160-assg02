@@ -25,17 +25,34 @@
     <div>
       <button type="button"><i class="fas fa-times"></i></button>
       <code>01</code>
-      <button type="button"><code>Red</code></button>
-      <button type="button"><code>Green</code></button>
-      <button type="button"><code>Blue</code></button>
+      <button type="button">Red</button>
+      <button type="button">Green</button>
+      <button type="button">Blue</button>
     </div>
   </div>
 </div>
 
 <div id="controls-horizontal" class="controls">
   <div class="label">Other Controls</div>
-  <div class="control-bar">
-    <span><code>1</code></span>
+  <div>
+    <span>
+      <input id="io-sor" type="file"></input>
+      <button id="extract" type="button">Extract SOR</button>
+      <button id="save" type="button">Save</button>
+      <button id="reset" type="button">Reset</button>
+    </span>
+  </div>
+  <div>
+    <span>
+      Cylinder side-count
+      <input id="sides-slider" type="range"></input>
+      <code id="sides-label"></code>
+    </span>
+    <span>
+      Cylinder radius
+      <input id="radius-slider" type="range"></input>
+      <code id="radius-label"></code>
+    </span>
   </div>
 </div>
 

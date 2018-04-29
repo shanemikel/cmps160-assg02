@@ -5,6 +5,7 @@
 #define POINT_SIZE 5
 #define SIDES 12
 #define RADIUS 0.06
+#define TRANSLATE 0
 
 var WHITE       = null;
 var BLACK       = null;
@@ -32,6 +33,7 @@ var g_polylines      = null;
 var g_sides          = SIDES;
 var g_radius         = RADIUS;
 var g_cylinders      = null;
+var g_translate      = TRANSLATE;
 
 function init() {
     WHITE       = hex2rgb($('#g-colors').css('--white'));
@@ -56,6 +58,20 @@ function init() {
 
     g_polylines = new Polylines(DEFAULT_POLYLINE_COLOR);
     g_cylinders = [];
+
+    setupIOSOR('io-sor');
+
+    $('#sides-label').text(g_sides);
+    $('#sides-slider').attr('step', 1);
+    $('#sides-slider').attr('min', 4);
+    $('#sides-slider').attr('max', 99);
+    $('#sides-slider').attr('value', g_sides);
+
+    $('#radius-label').text(g_radius.toFixed(2));
+    $('#radius-slider').attr('step', 0.01);
+    $('#radius-slider').attr('min', 0.01);
+    $('#radius-slider').attr('max', 1.00);
+    $('#radius-slider').attr('value', g_radius);
 }
 
 
@@ -78,7 +94,6 @@ function start(gl) {
     }
 
     setup_callbacks(gl);
-
     render(gl);
 }
 
@@ -113,6 +128,24 @@ function setup_callbacks(gl) {
     g_canvas.mousemove(function(ev) {
         render(gl, get_mouse_xy(g_canvas, ev));
     });
+    
+    $('#sides-slider').on('input', function() {
+        $(this).trigger('change');
+    });
+    $('#sides-slider').change(function() {
+        g_sides = this.value;
+        $('#sides-label').text(g_sides);
+        render(gl);
+    });
+
+    $('#radius-slider').on('input', function() {
+        $(this).trigger('change');
+    });
+    $('#radius-slider').change(function() {
+        g_radius = parseFloat(this.value);
+        $('#radius-label').text(g_radius.toFixed(2));
+        render(gl);
+    });
 }
 
 function click(gl, mouse_xy) {
@@ -136,7 +169,6 @@ function right_click(gl, mouse_xy) {
     var points = g_polylines.current.getPoints();
     g_polylines.current = new Polyline(DEFAULT_POLYLINE_COLOR);
 
-
     for (var i = 0; i < points.length - 1; i++) {
         console.log('Defined cylinder: '
                     + point2string(points[i][0], points[i][1], points[i][2])
@@ -146,7 +178,6 @@ function right_click(gl, mouse_xy) {
         // console.log('Cylinder volume: ' + cylinder.volume());
         g_cylinders.push(cylinder);
     }
-
     render(gl, mouse_xy);
 }
 
@@ -155,7 +186,7 @@ function render(gl, mouse_xy) {
     clear(gl, COLOR);
 
     render_grid(gl, DARK_GREY);
-    render_polygon_test(gl);
+    // render_polygon_test(gl);
 
     render_polylines(gl, mouse_xy);
     render_cylinders(gl);
@@ -192,7 +223,9 @@ function render_grid(gl, color) {
 
 function render_cylinders(gl) {
     for (var i = 0; i < g_cylinders.length; i++) {
+        // var trans    = new Matrix().translate
         var cylinder = g_cylinders[i];
+        // cylinder = cylinder.toFrame(g_sides, g_radius).map(v => 
         render_lines(gl, 1, cylinder.toFrame(g_sides, g_radius), cylinder.getColor());
     }
 }
