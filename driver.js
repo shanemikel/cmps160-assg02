@@ -136,12 +136,12 @@ function right_click(gl, mouse_xy) {
     var points = g_polylines.current.getPoints();
     g_polylines.current = new Polyline(DEFAULT_POLYLINE_COLOR);
 
-    console.log('Adding cylinder: '
-                + point2string(points[0][0], points[0][1], points[0][2])
-                + ' => '
-                + point2string(points[1][0], points[1][1], points[1][2]));
 
     for (var i = 0; i < points.length - 1; i++) {
+        console.log('Defined cylinder: '
+                    + point2string(points[i][0], points[i][1], points[i][2])
+                    + ' => '
+                    + point2string(points[i + 1][0], points[i + 1][1], points[i + 1][2]));
         var cylinder = new Cylinder(points[i], points[i + 1], DEFAULT_CYLINDER_COLOR);
         // console.log('Cylinder volume: ' + cylinder.volume());
         g_cylinders.push(cylinder);
