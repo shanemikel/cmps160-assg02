@@ -15,6 +15,9 @@ var GREY        = null;
 var DARK_GREY   = null;
 var LIGHT_GREY  = null;
 
+var DEFAULT_POLYLINE_COLOR = null;
+var DEFAULT_CYLINDER_COLOR = null;
+
 var g_canvas = null;
 
 var WIDTH  = null;
@@ -40,16 +43,18 @@ function init() {
     DARK_GREY   = hex2rgb($('#g-colors').css('--dark-grey'));
     LIGHT_GREY  = hex2rgb($('#g-colors').css('--light-grey'));
 
+    DEFAULT_POLYLINE_COLOR = BLUE;
+    DEFAULT_CYLINDER_COLOR = BLUE;
+
     WIDTH  = $('#g-webgl').css('width');
     HEIGHT = $('#g-webgl').css('height');
     COLOR  = hex2rgb($('#g-webgl').css('--background-color'));
-    console.log(COLOR);
 
     g_canvas = $('#webgl');
     g_canvas.attr('width'  , WIDTH);
     g_canvas.attr('height' , HEIGHT);
 
-    g_polylines = new Polylines();
+    g_polylines = new Polylines(DEFAULT_POLYLINE_COLOR);
     g_cylinders = [];
 }
 
@@ -129,7 +134,7 @@ function right_click(gl, mouse_xy) {
     g_building_line = false;
 
     var points = g_polylines.current.getPoints();
-    g_polylines.current = new Polyline();
+    g_polylines.current = new Polyline(DEFAULT_POLYLINE_COLOR);
 
     console.log('Adding cylinder: '
                 + point2string(points[0][0], points[0][1], points[0][2])
@@ -137,7 +142,7 @@ function right_click(gl, mouse_xy) {
                 + point2string(points[1][0], points[1][1], points[1][2]));
 
     for (var i = 0; i < points.length - 1; i++) {
-        var cylinder = new Cylinder(points[i], points[i + 1]);
+        var cylinder = new Cylinder(points[i], points[i + 1], DEFAULT_CYLINDER_COLOR);
         // console.log('Cylinder volume: ' + cylinder.volume());
         g_cylinders.push(cylinder);
     }
@@ -149,8 +154,16 @@ function right_click(gl, mouse_xy) {
 function render(gl, mouse_xy) {
     clear(gl, COLOR);
 
+    render_polygon_test(gl);
+
     render_polylines(gl, mouse_xy);
     render_cylinders(gl);
+}
+
+function render_polygon_test(gl) {
+    render_line_loop(gl, (new Circle(ORIGIN, 0.5)).toPolygon(16), GREEN);
+    render_line_loop(gl, (new Circle(ORIGIN, 0.5)).toPolygon( 8), RED);
+    render_line_loop(gl, (new Circle(ORIGIN, 0.5)).toPolygon( 4), BLUE);
 }
 
 function render_cylinders(gl) {

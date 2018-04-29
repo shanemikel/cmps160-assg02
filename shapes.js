@@ -3,8 +3,11 @@
 #include "util.js"
 
 
+#define ORIGIN [0.0, 0.0, 0.0]
+
+
 var Polyline = function(color) {
-    this.color  = color || RED;
+    this.color  = color || WHITE;
     this.points = [];
 }
 
@@ -97,7 +100,7 @@ Circle.prototype = {
         this.radius = radius;
     },
 
-    toNGon: function(sides) {
+    toPolygon: function(sides) {
         var sliceAngle = 2 * Math.PI / sides;
 
         var res = [];
@@ -115,16 +118,16 @@ Circle.prototype = {
         return res;
     },
 
-    toNGonFrame: function(sides) {
-        var ngon = this.toNGon(sides);
-        var res  = [];
+    toPolygonFrame: function(sides) {
+        var polygon = this.toPolygon(sides);
+        var res     = [];
 
-        for (var i = 0; i < ngon.length; i++) {
-            var i2 = (i + 1) % ngon.length;
+        for (var i = 0; i < polygon.length; i++) {
+            var i2 = (i + 1) % polygon.length;
             res.push(this.center);
-            res.push(ngon[i]);
-            res.push(ngon[i]);
-            res.push(ngon[i2]);
+            res.push(polygon[i]);
+            res.push(polygon[i]);
+            res.push(polygon[i2]);
         }
         return res;
     },
@@ -133,18 +136,18 @@ Circle.prototype = {
     //     return Math.PI * Math.pow(this.radius, 2);
     // },
 
-    // nGonArea: function(sides) {
-    //     var ngon = this.toNGon(sides);
-    //     console.log(ngon);
+    // polygonArea: function(sides) {
+    //     var polygon = this.toPolygon(sides);
+    //     console.log(polygon);
 
-    //     var deltaX = ngon[1][0] - ngon[0][0];
-    //     var deltaY = ngon[1][1] - ngon[0][1];
+    //     var deltaX = polygon[1][0] - polygon[0][0];
+    //     var deltaY = polygon[1][1] - polygon[0][1];
 
     //     var side      = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
     //     var perimeter = side * sides;
 
-    //     var apothemX = ngon[0][0] + deltaX / 2;
-    //     var apothemY = ngon[0][1] + deltaY / 2;
+    //     var apothemX = polygon[0][0] + deltaX / 2;
+    //     var apothemY = polygon[0][1] + deltaY / 2;
     //     var apothem  = Math.sqrt(Math.pow(apothemX, 2) + Math.pow(apothemY, 2));
 
     //     return 1/2 * apothem * perimeter;
@@ -154,7 +157,7 @@ Circle.prototype = {
 var Cylinder = function(end1, end2, color) {
     this.end1  = end1;
     this.end2  = end2;
-    this.color = color || RED;
+    this.color = color || WHITE;
 };
 
 Cylinder.prototype = {
@@ -166,8 +169,8 @@ Cylinder.prototype = {
     },
 
     // volume: function(sides, radius) {
-    //     var circle       = new Circle([0.0, 0.0, 0.0], radius);
-    //     var end_cap_area = circle.nGonArea(sides);
+    //     var circle       = new Circle(ORIGIN, radius);
+    //     var end_cap_area = circle.polygonArea(sides);
 
     //     var deltaX = this.end2[0] - this.end1[0];
     //     var deltaY = this.end2[1] - this.end1[0];
@@ -181,27 +184,27 @@ Cylinder.prototype = {
         var deltaX = this.end2[0] - this.end1[0];
         var deltaY = this.end2[1] - this.end1[1];
 
-        var c1 = new Circle([0.0, 0.0, 0.0], radius);
-        var c2 = new Circle([0.0, 0.0, 0.0], radius);
+        var c1 = new Circle(ORIGIN, radius);
+        var c2 = new Circle(ORIGIN, radius);
 
         var rotate = (new Matrix()).rotateY(Math.PI / 2)
                                    .rotateZ(-Math.atan(deltaY / deltaX));
         var xform1 = rotate.translate(this.end1);
         var xform2 = rotate.translate(this.end2);
 
-        var c1_vertices = c1.toNGonFrame(sides).map(v => xform1.multiply(v));
-        var c2_vertices = c2.toNGonFrame(sides).map(v => xform2.multiply(v));;
+        var c1_vertices = c1.toPolygonFrame(sides).map(v => xform1.multiply(v));
+        var c2_vertices = c2.toPolygonFrame(sides).map(v => xform2.multiply(v));;
 
-        var ngon1_vertices = c1.toNGon(sides).map(v => xform1.multiply(v));
-        var ngon2_vertices = c2.toNGon(sides).map(v => xform2.multiply(v));
+        var polygon1_vertices = c1.toPolygon(sides).map(v => xform1.multiply(v));
+        var polygon2_vertices = c2.toPolygon(sides).map(v => xform2.multiply(v));
         
         var bridge = [];
-        for (var i = 0; i < ngon1_vertices.length; i++) {
-            var i2 = (i + 1) % ngon1_vertices.length;
-            bridge.push(ngon1_vertices[i]);
-            bridge.push(ngon2_vertices[i]);
-            bridge.push(ngon2_vertices[i]);
-            bridge.push(ngon1_vertices[i2]);
+        for (var i = 0; i < polygon1_vertices.length; i++) {
+            var i2 = (i + 1) % polygon1_vertices.length;
+            bridge.push(polygon1_vertices[i]);
+            bridge.push(polygon2_vertices[i]);
+            bridge.push(polygon2_vertices[i]);
+            bridge.push(polygon1_vertices[i2]);
         }
 
         return c1_vertices.concat(c2_vertices).concat(bridge);
