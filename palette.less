@@ -1,13 +1,19 @@
 @white:      #fdfdfd;
+@black:      #111;
 @red:        rgb(100%,  40%,  40%);
 @green:      rgb( 40%, 100%,  40%);
 @blue:       rgb( 40%,  40%, 100%);
-@black:      #000;
-@dark-grey:  #212121;
-@light-grey: #515151;
+@grey:       #515151;
+@dark-grey:  darken(@grey, 15%);
+@light-grey: lighten(@grey, 40%);
 
 #g-colors {
+    --white: @white;
+    --black: @black;
     --red: @red;
     --green: @green;
     --blue: @blue;
+    --grey: @grey;
+    --dark-grey: @dark-grey;
+    --light-grey: @light-grey;
 }

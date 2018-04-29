@@ -4,19 +4,22 @@
 
 #define POINT_SIZE 5
 #define SIDES 12
-#define RADIUS 0.05
+#define RADIUS 0.08
 
-var RED   = null;
-var GREEN = null;
-var BLUE  = null;
-
-var WHITE = [1.0, 1.0, 1.0, 1.0];
-var BLACK = [0.0, 0.0, 0.0, 1.0];
+var WHITE       = null;
+var BLACK       = null;
+var RED         = null;
+var GREEN       = null;
+var BLUE        = null;
+var GREY        = null;
+var DARK_GREY   = null;
+var LIGHT_GREY  = null;
 
 var g_canvas = null;
 
 var WIDTH  = null;
 var HEIGHT = null;
+var COLOR  = null;
 
 var g_mouse_focus = false;
 
@@ -28,12 +31,19 @@ var g_radius         = RADIUS;
 var g_cylinders      = null;
 
 function init() {
-    RED   = hex2rgb($('#g-colors').css('--red'));
-    GREEN = hex2rgb($('#g-colors').css('--green'));
-    BLUE  = hex2rgb($('#g-colors').css('--blue'));
+    WHITE       = hex2rgb($('#g-colors').css('--white'));
+    BLACK       = hex2rgb($('#g-colors').css('--black'));
+    RED         = hex2rgb($('#g-colors').css('--red'));
+    GREEN       = hex2rgb($('#g-colors').css('--green'));
+    BLUE        = hex2rgb($('#g-colors').css('--blue'));
+    GREY        = hex2rgb($('#g-colors').css('--grey'));
+    DARK_GREY   = hex2rgb($('#g-colors').css('--dark-grey'));
+    LIGHT_GREY  = hex2rgb($('#g-colors').css('--light-grey'));
 
     WIDTH  = $('#g-webgl').css('width');
     HEIGHT = $('#g-webgl').css('height');
+    COLOR  = hex2rgb($('#g-webgl').css('--background-color'));
+    console.log(COLOR);
 
     g_canvas = $('#webgl');
     g_canvas.attr('width'  , WIDTH);
@@ -137,7 +147,7 @@ function right_click(gl, mouse_xy) {
 
 
 function render(gl, mouse_xy) {
-    clear(gl, BLACK);
+    clear(gl, COLOR);
 
     render_polylines(gl, mouse_xy);
     render_cylinders(gl);

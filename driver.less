@@ -11,7 +11,7 @@ body
 
 *
 {
-    color: lighten(@light-grey, 40%);
+    color: @light-grey;
     font-family: @proportional-font;
 }
 
@@ -23,8 +23,8 @@ code
 
 button
 {
-    background-color: darken(@light-grey, 10%);
-    border: 2px solid lighten(@light-grey, 10%);
+    background-color: darken(@grey, 8%);
+    border: 2px solid lighten(@grey, 10%);
 }
 
 
@@ -51,7 +51,7 @@ button
 .controls > div
 {
     padding: 5px 0 5px 0;
-    border-bottom: 2px double darken(@light-grey, 5%);
+    border-bottom: 2px double darken(@grey, 5%);
     text-align: center;
     font-family: @monospace-font;
 }
@@ -68,7 +68,7 @@ button
     margin-left: @app-space;
     width: @controls-vertical-width;
     height: @webgl-height;
-    background-color: @light-grey;
+    background-color: @grey;
 }
 
 #controls-horizontal
@@ -79,17 +79,19 @@ button
     width: calc(@webgl-width + @controls-vertical-width + @app-space
                 + 2 * @rounded-padding);
     height: @controls-horizontal-height;
-    background-color: @light-grey;
+    background-color: @grey;
 }
 
 
-@webgl-width:  500px;
-@webgl-height: 500px;
+@webgl-width:             500px;
+@webgl-height:            500px;
+@webgl-background-color:  @grey;
 
 #g-webgl
 {
     width: @webgl-width;
     height: @webgl-height;
+    --background-color: @webgl-background-color;
 }
 
 #webgl-mask
@@ -98,6 +100,6 @@ button
 
     width: @webgl-width;
     height: @webgl-height;
-    background-color: @black;
+    background-color: @webgl-background-color;
     overflow: hidden;
 }

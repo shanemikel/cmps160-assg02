@@ -25,10 +25,10 @@ Polyline.prototype = {
     },
 
     setColor: function(color) {
-        this.color = [color[0], color[1], color[2]];
+        this.color = [color[0], color[1], color[2], color[3]];
     },
     getColor: function() {
-        return [this.color[0], this.color[1], this.color[2]];
+        return [this.color[0], this.color[1], this.color[2], this.color[3]];
     },
 };
 

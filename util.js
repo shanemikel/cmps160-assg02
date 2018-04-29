@@ -160,9 +160,11 @@ function hex2rgb(hex) {
     }
 
     var rgb = hexToRgb(hex.trim());
-    rgb = [rgb.r, rgb.g, rgb.b, 1.0];
+    rgb = [rgb.r, rgb.g, rgb.b];
     for (var i = 0; i < rgb.length; i++)
         rgb[i] /= 255;
+    rgb.push(1.0);
+
     return rgb;
 }
 
