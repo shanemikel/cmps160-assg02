@@ -9,11 +9,19 @@ var Polyline = function(color) {
 }
 
 Polyline.prototype = {
-    pushPoint: function(x, y) {
+    addPoint: function(x, y) {
         this.points.push([x, y, 0.0]);
     },
-    getPoints: function() {
-        return this.points;
+    getPoints: function(mouseXY) {
+        var res = [];
+
+        for (var i = 0; i < this.points.length; i++)
+            res.push([this.points[i][0], this.points[i][1], this.points[i][2]]);
+
+        if (mouseXY !== undefined)
+            res.push([mouseXY[0], mouseXY[1], 0.0]);
+
+        return res;
     },
 
     setColor: function(color) {
@@ -21,29 +29,6 @@ Polyline.prototype = {
     },
     getColor: function() {
         return [this.color[0], this.color[1], this.color[2]];
-    },
-
-    flatten: function(mouseXY) {
-        var points = this.points;
-
-        if (mouseXY === undefined)
-            var arr = new Float32Array(points.length * 3);
-        else
-            var arr = new Float32Array(points.length * 3 + 3);
-
-        for (var i = 0; i < points.length; i++) {
-            arr[3 * i]     = points[i][0];
-            arr[3 * i + 1] = points[i][1];
-            arr[3 * i + 2] = points[i][2];
-        }
-
-        if (mouseXY !== undefined) {
-            arr[arr.length - 3] = mouseXY[0];
-            arr[arr.length - 2] = mouseXY[1];
-            arr[arr.length - 1] = 0.0;
-        }
-
-        return arr;
     },
 };
 
@@ -143,6 +128,27 @@ Circle.prototype = {
         }
         return res;
     },
+
+    // area: function() {
+    //     return Math.PI * Math.pow(this.radius, 2);
+    // },
+
+    // nGonArea: function(sides) {
+    //     var ngon = this.toNGon(sides);
+    //     console.log(ngon);
+
+    //     var deltaX = ngon[1][0] - ngon[0][0];
+    //     var deltaY = ngon[1][1] - ngon[0][1];
+
+    //     var side      = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+    //     var perimeter = side * sides;
+
+    //     var apothemX = ngon[0][0] + deltaX / 2;
+    //     var apothemY = ngon[0][1] + deltaY / 2;
+    //     var apothem  = Math.sqrt(Math.pow(apothemX, 2) + Math.pow(apothemY, 2));
+
+    //     return 1/2 * apothem * perimeter;
+    // },
 };
 
 var Cylinder = function(end1, end2, color) {
@@ -159,6 +165,18 @@ Cylinder.prototype = {
         this.color = color;
     },
 
+    // volume: function(sides, radius) {
+    //     var circle       = new Circle([0.0, 0.0, 0.0], radius);
+    //     var end_cap_area = circle.nGonArea(sides);
+
+    //     var deltaX = this.end2[0] - this.end1[0];
+    //     var deltaY = this.end2[1] - this.end1[0];
+    //     var length = Math.sqrt(Math.pow(deltaX, 2) + Math.pow(deltaY, 2));
+
+    //     console.log('Circular cylinder volume: ' + circle.area() * length);
+    //     return end_cap_area * length;
+    // },
+
     toFrame: function(sides, radius) {
         var deltaX = this.end2[0] - this.end1[0];
         var deltaY = this.end2[1] - this.end1[1];
@@ -171,21 +189,11 @@ Cylinder.prototype = {
         var xform1 = rotate.translate(this.end1);
         var xform2 = rotate.translate(this.end2);
 
-        var c1_vertices = c1.toNGonFrame(sides);
-        for (var i = 0; i < c1_vertices.length; i++)
-            c1_vertices[i] = xform1.multiply(c1_vertices[i]);
+        var c1_vertices = c1.toNGonFrame(sides).map(v => xform1.multiply(v));
+        var c2_vertices = c2.toNGonFrame(sides).map(v => xform2.multiply(v));;
 
-        var c2_vertices = c2.toNGonFrame(sides);
-        for (var i = 0; i < c2_vertices.length; i++)
-            c2_vertices[i] = xform2.multiply(c2_vertices[i]);
-
-        var ngon1_vertices = c1.toNGon(sides);
-        for (var i = 0; i < ngon1_vertices.length; i++)
-            ngon1_vertices[i] = xform1.multiply(ngon1_vertices[i]);
-
-        var ngon2_vertices = c2.toNGon(sides);
-        for (var i = 0; i < ngon2_vertices.length; i++)
-            ngon2_vertices[i] = xform2.multiply(ngon2_vertices[i]);
+        var ngon1_vertices = c1.toNGon(sides).map(v => xform1.multiply(v));
+        var ngon2_vertices = c2.toNGon(sides).map(v => xform2.multiply(v));
         
         var bridge = [];
         for (var i = 0; i < ngon1_vertices.length; i++) {
@@ -283,7 +291,7 @@ Matrix.prototype = {
         /**  Multiply a 4x4 matrix by a 3-vector or another 4x4 Matrix
          *   @param other either a matrix or vector
          */
-        if (other.data === undefined) {  // other is a 3-vector or 4-vector (as Array)
+        if (other.data === undefined) {  // other is a 3-vector (as Array)
             other = [other[0], other[1], other[2], 1.0];
             var res = [0.0, 0.0, 0.0, 0.0];
 
@@ -296,6 +304,7 @@ Matrix.prototype = {
 
             for (var i = 0; i < 3; i++)
                 res[i] /= res[3];
+            
             return res;
         } else {                         // other is a 4x4 matrix
             var res  = new Matrix();

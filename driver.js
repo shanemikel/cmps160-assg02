@@ -11,6 +11,7 @@ var GREEN = null;
 var BLUE  = null;
 
 var WHITE = [1.0, 1.0, 1.0, 1.0];
+var BLACK = [0.0, 0.0, 0.0, 1.0];
 
 var g_canvas = null;
 
@@ -104,8 +105,7 @@ function click(gl, mouse_xy) {
     var y = mouse_xy[1];
 
     g_building_line = true;
-
-    g_polylines.current.pushPoint(x, y);
+    g_polylines.current.addPoint(x, y);
 
     render(gl, mouse_xy);
 }
@@ -125,121 +125,48 @@ function right_click(gl, mouse_xy) {
                 + point2string(points[0][0], points[0][1], points[0][2])
                 + ' => '
                 + point2string(points[1][0], points[1][1], points[1][2]));
-    var cylinder = new Cylinder(points[0], points[1]);
-    g_cylinders.push(cylinder);
+
+    for (var i = 0; i < points.length - 1; i++) {
+        var cylinder = new Cylinder(points[i], points[i + 1]);
+        // console.log('Cylinder volume: ' + cylinder.volume());
+        g_cylinders.push(cylinder);
+    }
 
     render(gl, mouse_xy);
 }
 
 
 function render(gl, mouse_xy) {
-    clear(gl);
-    
+    clear(gl, BLACK);
+
     render_polylines(gl, mouse_xy);
     render_cylinders(gl);
 }
-
-function clear(gl) {
-    gl.clearColor(0.0, 0.0, 0.0, 1.0);
-    gl.clear(gl.COLOR_BUFFER_BIT);
-}
-
 
 function render_cylinders(gl) {
     gl.lineWidth(1.0);
 
     for (var i = 0; i < g_cylinders.length; i++) {
-        render_cylinder(gl, g_cylinders[i]);
+        var cylinder = g_cylinders[i];
+        render_lines(gl, cylinder.toFrame(g_sides, g_radius), cylinder.getColor());
     }
 }
-
-function render_cylinder(gl, cylinder) {
-    var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-
-    var color       = cylinder.getColor();
-    var u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
-    gl.uniform4f(u_FragColor, color[0], color[1], color[2], color[3]);
-
-    var buffer = flatten(3, cylinder.toFrame(g_sides, g_radius));
-    var count  = buffer.length / 3;
-
-    var vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, buffer, gl.DYNAMIC_DRAW);
-    gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(a_Position);
-
-    gl.drawArrays(gl.LINES, 0, count);
-}
-
 
 function render_polylines(gl, mouse_xy) {
     gl.lineWidth(2.0);
 
     g_polylines.map(function(i, polyline) {
-        render_polyline(gl, polyline);
+        render_line_strip(gl, polyline.getPoints(), polyline.getColor());
+        render_points(gl, g_point_size, polyline.getPoints(), polyline.getColor());
     });
 
-    if (g_mouse_focus)
-        render_polyline(gl, g_polylines.current, mouse_xy);
-    else
-        render_polyline(gl, g_polylines.current);
+    var polyline = g_polylines.current;
+    if (polyline.getPoints().length == 0) return;
+    if (g_mouse_focus) {
+        render_line_strip(gl, polyline.getPoints(mouse_xy), polyline.getColor());
+        render_points(gl, g_point_size, polyline.getPoints(mouse_xy), polyline.getColor());
+    } else {
+        render_line_strip(gl, polyline.getPoints(), polyline.getColor());
+        render_points(gl, g_point_size, polyline.getPoints(), polyline.getColor());
+    }
 }
-
-function render_polyline(gl, polyline, mouse_xy) {
-    var a_Position = gl.getAttribLocation(gl.program, 'a_Position');
-    if (a_Position < 0) {
-        console.log('Failed to get the storage location of a_Position');
-        return;
-    }
-
-    var u_PointSize = gl.getUniformLocation(gl.program, 'u_PointSize');
-    if (! u_PointSize) {
-        console.log('Failed to get the storage location of u_PointSize');
-        return;
-    }
-    gl.uniform1f(u_PointSize, g_point_size);
-
-    var u_FragColor = gl.getUniformLocation(gl.program, 'u_FragColor');
-    if (! u_FragColor) {
-        console.log('Failed to get the storage location of u_FragColor');
-        return;
-    }
-    var color = polyline.getColor();
-    gl.uniform4f(u_FragColor, color[0], color[1], color[2], color[3]);
-
-    var vertexBuffer = gl.createBuffer();
-    if (! vertexBuffer) {
-        console.log('Failed to create the buffer object');
-        return;
-    }
-
-    var buffer = polyline.flatten(mouse_xy);
-    var count  = buffer.length / 3;
-
-    if (count == 0)
-        return;
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, buffer, gl.DYNAMIC_DRAW);
-    gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(a_Position);
-    gl.drawArrays(gl.POINTS, 0, count);
-    gl.drawArrays(gl.LINE_STRIP, 0, count);
-}
-
-
-var VSHADER_SOURCE =
-    'attribute vec4 a_Position;\n'     +
-    'uniform float u_PointSize;\n'     +
-    'void main() {\n'                  +
-    '  gl_Position = a_Position;\n'    +
-    '  gl_PointSize = u_PointSize;\n'  +
-    '}';
-
-var FSHADER_SOURCE =
-    'precision mediump float;\n'       +
-    'uniform vec4 u_FragColor;\n'      +
-    'void main() {\n'                  +
-    '  gl_FragColor = u_FragColor;\n'  +
-    '}';
