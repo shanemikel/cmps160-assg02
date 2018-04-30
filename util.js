@@ -171,6 +171,6 @@ function hex2rgb(hex) {
     return rgb;
 }
 
-function point2string(x, y, z) {
-    return "{" + x + ", " + y + ", " + z + "}";
+function vector2string(v) {
+    return "{" + v[0] + ", " + v[1] + ", " + v[2] + "}";
 }

@@ -82,7 +82,6 @@ input[type='range']
 {
     -webkit-appearance: none;
     vertical-align: bottom;
-    // margin: calc(@thumb-height / 2) 3px;
     width: @track-width;
 
     &:focus
@@ -122,10 +121,13 @@ input[type='range']
 
 .controls > .label
 {
+    padding: 2px 0 5px 0;
+    border-bottom: 3px double darken(@grey, 8%);
+    text-align: center;
     font-family: @proportional-font;
 }
 
-.controls > div
+.controls div.control-group:not(:empty)
 {
     padding: 5px 0 5px 0;
     border-bottom: 3px double darken(@grey, 8%);
@@ -133,7 +135,12 @@ input[type='range']
     font-family: @monospace-font;
 }
 
-.controls > div > span
+.controls div.control-group div.control-group:last-child
+{
+    border-bottom: none;
+}
+
+.controls div.control-group span.control-group
 {
     margin: 0;
     padding: 0 5px 0 6px;
@@ -149,26 +156,46 @@ input[type='range']
     border-right: 1px solid darken(@grey, 5%);
 }
 
+.scrollbar::-webkit-scrollbar
+{
+    background-color: @grey;
+    border-radius: 8px;
+    width: 10px;
+}
+
+.scrollbar::-webkit-scrollbar-thumb
+{
+    border-radius: 8px;
+    background: darken(@grey, 5%);
+}
+
+.invisible-scrollbar::-webkit-scrollbar
+{
+    display: none;
+}
+
 @app-space: 10px;
 
-@controls-vertical-width: 220px;
-@controls-horizontal-height: 150px;
+@controls-vertical-width: 250px;
+@controls-horizontal-height: 125px;
 
 #controls-vertical
 {
     .rounded();
     
-    margin-left: @app-space;
+    margin-right: @app-space;
     width: @controls-vertical-width;
     height: @webgl-height;
     background-color: @grey;
+
+    overflow-y: scroll;
 }
 
 #controls-horizontal
 {
     .rounded();
 
-    margin-top: @app-space;
+    margin-bottom: @app-space;
     width: calc(@webgl-width + @controls-vertical-width + @app-space
                 + 2 * @rounded-padding);
     height: @controls-horizontal-height;

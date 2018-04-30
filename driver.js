@@ -57,7 +57,7 @@ function init() {
     g_canvas.attr('height' , HEIGHT);
 
     g_polylines = new Polylines(DEFAULT_POLYLINE_COLOR);
-    g_cylinders = [];
+    g_cylinders = new Cylinders();
 
     setupIOSOR('io-sor');
 
@@ -171,14 +171,55 @@ function right_click(gl, mouse_xy) {
 
     for (var i = 0; i < points.length - 1; i++) {
         console.log('Defined cylinder: '
-                    + point2string(points[i][0], points[i][1], points[i][2])
+                    + vector2string(points[i])
                     + ' => '
-                    + point2string(points[i + 1][0], points[i + 1][1], points[i + 1][2]));
+                    + vector2string(points[i + 1]));
+
         var cylinder = new Cylinder(points[i], points[i + 1], DEFAULT_CYLINDER_COLOR);
         // console.log('Cylinder volume: ' + cylinder.volume());
-        g_cylinders.push(cylinder);
+
+        make_cylinder_control(gl, g_cylinders.insert(cylinder));
     }
     render(gl, mouse_xy);
+}
+
+function make_cylinder_control(gl, i) {
+    var label = i.toString();
+    if (label.length < 2) label = '0' + label;
+
+    $('#cylinder-controls').append(`
+            <div id="cylinder-control-${i}" class="control-group">
+              <button class="remove" type="button"><i class="fas fa-times"></i></button>
+              <code>${label}</code>
+              <button class="red" type="button">Red</button>
+              <button class="green" type="button">Green</button>
+              <button class="blue" type="button">Blue</button>
+            </div>
+        `);
+
+    var control_selector = `#cylinder-control-${i}`;
+
+    $(control_selector).children('button.remove').first().click(function() {
+        console.log('Removing cylinder: ' + i);
+        $(control_selector).remove();
+        g_cylinders.remove(i);
+        render(gl);
+    });
+    $(control_selector).children('button.red').first().click(function() {
+        console.log('Setting color of cylinder: ' + i);
+        g_cylinders.at(i).setColor(RED);
+        render(gl);
+    });
+    $(control_selector).children('button.green').first().click(function() {
+        console.log('Setting color of cylinder: ' + i);
+        g_cylinders.at(i).setColor(GREEN);
+        render(gl);
+    });
+    $(control_selector).children('button.blue').first().click(function() {
+        console.log('Setting color of cylinder: ' + i);
+        g_cylinders.at(i).setColor(BLUE);
+        render(gl);
+    });
 }
 
 
@@ -222,12 +263,9 @@ function render_grid(gl, color) {
 }
 
 function render_cylinders(gl) {
-    for (var i = 0; i < g_cylinders.length; i++) {
-        // var trans    = new Matrix().translate
-        var cylinder = g_cylinders[i];
-        // cylinder = cylinder.toFrame(g_sides, g_radius).map(v => 
+    g_cylinders.map(function(i, cylinder) {
         render_lines(gl, 1, cylinder.toFrame(g_sides, g_radius), cylinder.getColor());
-    }
+    });
 }
 
 function render_polylines(gl, mouse_xy) {

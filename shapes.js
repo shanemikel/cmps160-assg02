@@ -7,7 +7,10 @@
 
 
 var Polyline = function(color) {
-    this.color  = color || WHITE;
+    if (color !== undefined)
+        this.color = $.extend({}, color);
+    else
+        this.color = $.extend({}, WHITE);
     this.points = [];
 }
 
@@ -19,7 +22,7 @@ Polyline.prototype = {
         var res = [];
 
         for (var i = 0; i < this.points.length; i++)
-            res.push([this.points[i][0], this.points[i][1], this.points[i][2]]);
+            res.push($.extend({}, this.points[i]));
 
         if (mouseXY !== undefined)
             res.push([mouseXY[0], mouseXY[1], 0.0]);
@@ -28,10 +31,10 @@ Polyline.prototype = {
     },
 
     setColor: function(color) {
-        this.color = [color[0], color[1], color[2], color[3]];
+        this.color = $.extend({}, color);
     },
     getColor: function() {
-        return [this.color[0], this.color[1], this.color[2], this.color[3]];
+        return $.extend({}, this.color);
     },
 };
 
@@ -44,17 +47,13 @@ var Polylines = function(color) {
 
 Polylines.prototype = {
     insert: function(polyline) {
-        for (var i = 0; i < this.lines.length; i++) {
-            if (this.lines[i] === undefined) {
-                this.lines[i] = polyline;
-
-                this.count += 1;
-                return i;
-            }
+        var i = 0;
+        for (; i < this.lines.length; i++) {
+            if (this.lines[i] === undefined)
+                break;
         }
-        var i = this.lines.length;
-        this.lines[i] = polyline;
 
+        this.lines[i] = polyline;
         this.count += 1;
         return i;
     },
@@ -74,23 +73,22 @@ Polylines.prototype = {
     },
     remove: function(i) {
         this.lines[i] = undefined;
-
         this.count -= 1;
     },
 };
 
 
 var Circle = function(center, radius) {
-    this.center = center;
+    this.center = $.extend({}, center);
     this.radius = radius;
 };
 
 Circle.prototype = {
     getCenter: function() {
-        return [this.center[0], this.center[1], this.center[2]];
+        return $.extend({}, this.center);
     },
     setCenter: function(center) {
-        this.center = [center[0], center[1], center[2]];
+        this.center = $.extend({}, center);
     },
 
     getRadius: function() {
@@ -114,7 +112,6 @@ Circle.prototype = {
             }
             res[i] = [this.center[0] + x1, this.center[1] + y1, this.center[2]];
         }
-
         return res;
     },
 
@@ -124,7 +121,7 @@ Circle.prototype = {
 
         for (var i = 0; i < polygon.length; i++) {
             var i2 = (i + 1) % polygon.length;
-            res.push(this.center);
+            res.push($.extend({}, this.center));
             res.push(polygon[i]);
             res.push(polygon[i]);
             res.push(polygon[i2]);
@@ -155,17 +152,17 @@ Circle.prototype = {
 };
 
 var Cylinder = function(end1, end2, color) {
-    this.end1  = end1;
-    this.end2  = end2;
-    this.color = color || WHITE;
+    this.end1  = $.extend({}, end1);
+    this.end2  = $.extend({}, end2);
+    this.color = $.extend({}, color) || WHITE;
 };
 
 Cylinder.prototype = {
     getColor: function() {
-        return this.color;
+        return $.extend({}, this.color);
     },
     setColor: function(color) {
-        this.color = color;
+        this.color = $.extend({}, color);
     },
 
     // volume: function(sides, radius) {
@@ -208,6 +205,39 @@ Cylinder.prototype = {
         }
 
         return c1_vertices.concat(c2_vertices).concat(bridge);
+    },
+};
+
+var Cylinders = function() {
+    this.count     = 0;
+    this.cylinders = [];
+};
+
+Cylinders.prototype = {
+    insert: function(cylinder) {
+        var i = 0;
+        for (; i < this.cylinders.length; i++) {
+            if (this.cylinders[i] === undefined)
+                break;
+        }
+
+        this.cylinders[i] = cylinder;
+        this.count += 1;
+        return i;
+    },
+
+    at: function(i) {
+        return this.cylinders[i];
+    },
+    map: function(cb) {
+        for (var i = 0; i < this.cylinders.length; i++)
+            if (this.cylinders[i] !== undefined)
+                cb(i, this.cylinders[i]);
+    },
+
+    remove: function(i) {
+        this.cylinders[i] = undefined;
+        this.count -= 1;
     },
 };
 

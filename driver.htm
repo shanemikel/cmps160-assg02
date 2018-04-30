@@ -13,46 +13,40 @@
 <meta id="g-colors" />
 <meta id="g-webgl" />
 
-<div class="container">
-  <div id="webgl-mask">
-    <canvas id="webgl" oncontextmenu="return false;">
-      Please use a browser that supports "canvas"
-    </canvas>
-  </div>
-
-  <div id="controls-vertical" class="controls">
-    <div class="label">Cylinder Controls</div>
-    <div>
-      <button type="button"><i class="fas fa-times"></i></button>
-      <code>01</code>
-      <button type="button">Red</button>
-      <button type="button">Green</button>
-      <button type="button">Blue</button>
-    </div>
-  </div>
-</div>
-
-<div id="controls-horizontal" class="controls">
-  <div class="label">Other Controls</div>
-  <div>
-    <span>
+<div id="controls-horizontal" class="controls scrollbar">
+  <div class="label">Main Controls</div>
+  <div class="control-group">
+    <span class="control-group">
       <input id="io-sor" type="file"></input>
       <button id="extract" type="button">Extract SOR</button>
       <button id="save" type="button">Save</button>
       <button id="reset" type="button">Reset</button>
     </span>
   </div>
-  <div>
-    <span>
+  <div class="control-group">
+    <span class="control-group">
       Cylinder side-count
       <input id="sides-slider" type="range"></input>
       <code id="sides-label"></code>
     </span>
-    <span>
+    <span class="control-group">
       Cylinder radius
       <input id="radius-slider" type="range"></input>
       <code id="radius-label"></code>
     </span>
+  </div>
+</div>
+
+<div class="container">
+  <div id="controls-vertical" class="controls scrollbar">
+    <div class="label">Cylinder Controls</div>
+    <div id="cylinder-controls" class="control-group"></div>
+  </div>
+
+  <div id="webgl-mask">
+    <canvas id="webgl" oncontextmenu="return false;">
+      Please use a browser that supports "canvas"
+    </canvas>
   </div>
 </div>
 
